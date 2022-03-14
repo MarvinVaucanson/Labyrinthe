@@ -30,3 +30,13 @@ class Minuteur : #un chrono de sec temps qui affiche fin une fois fini
 ###====# Temp #====###
 a = Minuteur(10)
 a.temps()
+
+#lire dans un fichier
+fichier = open("data.txt", "r")
+print fichier.read()
+fichier.close()
+
+#ecrire dans un fichier
+fichier = open("data.txt", "a")
+fichier.write("Bonjour monde")
+fichier.close()
