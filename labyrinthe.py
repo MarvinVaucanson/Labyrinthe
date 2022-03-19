@@ -5,7 +5,6 @@ from sys import exit
 import matplotlib.pyplot as plt
 from pile import Pile
 
-
 class Case:
     def __init__(self):
         self.murN = True
@@ -25,6 +24,7 @@ class Labyrinthe:
         self.largeur = largeur
         self.hauteur = hauteur
         self.laby = [[Case() for i in range (self.hauteur)]for i in range (self.largeur)]
+
 
     def __directions_possibles(self,i,j):
         # code à décommenter et à compléter : exercice n°4
@@ -92,42 +92,77 @@ class Labyrinthe:
     def afficher(self):
         for i in range(self.largeur):
             color="r"
-            pygame.draw.rect(self.fenetre,(255,0,255),pygame.Rect(0,0,640,640),1)
+            pygame.draw.rect(self.fond,(255,0,255),pygame.Rect(0,0,640,640),1)
             for j in range(self.hauteur):
                 if self.laby[i][j].murS:
-                    pygame.draw.line(self.fenetre,(255,0,255),[int((i)*640/self.largeur),int((j+1)*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
+                    pygame.draw.line(self.fond,(255,0,255),[int((i)*640/self.largeur),int((j+1)*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
                 if self.laby[i][j].murE:
-                    pygame.draw.line(self.fenetre,(255,0,255),[int((i+1)*640/self.largeur),int(j*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
+                    pygame.draw.line(self.fond,(255,0,255),[int((i+1)*640/self.largeur),int(j*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
 
 
         
         #self.fenetre.blit()
         pygame.display.flip()
+    
+
+        
 
 class Joueur:
     def __init__(self,image,nb_cases):
-        self.joueur = pygame.image.load(image).convert_alpha()
+        self.image = pygame.image.load(image).convert_alpha()
         self.orientation = 1
-        self.position = self.joueur.get_rect()
-        laby.fenetre.blit(self.joueur,self.position)
-        self.joueur = pygame.transform.scale(self.joueur, (2,2))
+        self.position = self.image.get_rect()
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-8,int(640/nb_cases)-8))
         pygame.display.flip()
     def gauche (self):
-        self.joueur = pygame.transform.rotate(self.joueur,(self.orientation-4)*90)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
         self.orientation = 4
         self.position = self.position.move(-3,0)
     def droite (self):
-        self.joueur = pygame.transform.rotate(self.joueur,(self.orientation-2)*90)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-2)*90)
         self.orientation = 2
         self.position = self.position.move(3,0)
     def haut (self):
-        self.joueur = pygame.transform.rotate(self.joueur,(self.orientation-1)*90)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-1)*90)
         self.position = self.position.move(0,-3)
         self.orientation = 1
     def bas (self):
-        self.joueur = pygame.transform.rotate(self.joueur,(self.orientation-3)*90)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-3)*90)
         self.orientation = 3
         self.position = self.position.move(0,3)
+        
+class Jeu:
+    def __init__(self):
+        self.laby = Labyrinthe(nb_cases,nb_cases)
+        self.laby.generer()
+        self.laby.afficher()
+        self.joueur = Joueur('princesse.png',nb_cases)
+        self.continuer = True
+        self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
+        pygame.display.flip()
+    def loop(self):
+        pygame.key.set_repeat(20, 20)
+        self.laby.fenetre.blit(self.laby.fond,(0,0))
+        while self.continuer:
+            self.laby.fenetre.blit(self.laby.fond,(0,0))
+            self.laby.fenetre.blit(self.laby.fenetre,(0,0))
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    self.continuer = False
+                elif event.type == KEYDOWN:
+                    if pygame.key.get_pressed()[K_DOWN]:
+                        self.joueur.bas()
+                    if pygame.key.get_pressed()[K_UP]:
+                        self.joueur.haut()
+                    if pygame.key.get_pressed()[K_LEFT]:
+                        self.joueur.gauche()
+                    if pygame.key.get_pressed()[K_RIGHT]:
+                        self.joueur.droite()
+            self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
+            pygame.display.flip()
+        pygame.quit()
+
+        
 
 ### Programme principal ###
 if __name__=='__main__':
@@ -142,8 +177,11 @@ if __name__=='__main__':
     laby.laby[5][7].murS = False
     laby.laby[4][4].murW = False
     laby.afficher()"""
-    nb_cases = 19
-    laby = Labyrinthe(nb_cases,nb_cases)
-    joueur = Joueur('Tank2V1.png',nb_cases)
-    laby.generer()
-    laby.afficher()
+    nb_cases = 10
+    #laby = Labyrinthe(nb_cases,nb_cases)
+    #joueur = Joueur('Tank2V1.png',nb_cases)
+    #laby.generer()
+    #laby.afficher()
+    jeu = Jeu()
+    jeu.loop()
+
