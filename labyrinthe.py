@@ -4,6 +4,7 @@ from random import randint, choice
 from sys import exit
 import matplotlib.pyplot as plt
 from pile import Pile
+import time
 
 class Case:
     def __init__(self):
@@ -98,14 +99,29 @@ class Labyrinthe:
                     pygame.draw.line(self.fond,(255,0,255),[int((i)*640/self.largeur),int((j+1)*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
                 if self.laby[i][j].murE:
                     pygame.draw.line(self.fond,(255,0,255),[int((i+1)*640/self.largeur),int(j*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
-
-
-        
+                    
         #self.fenetre.blit()
         pygame.display.flip()
-    
-
         
+class Minuteur :
+
+    def __init__ (self, sec):
+        self.sec = sec
+        self.laby = Labyrinthe(nb_cases,nb_cases)
+        self.font = pygame.font.SysFont('impact', 30)
+        self.start = time.time()
+
+    def temps (self):
+        while self.sec > 0 :
+            print("test")
+            self.sec -= 1
+            return self.sec
+
+    def affichertemps(self):
+        a=int(abs(time.time() - self.start - self.sec))
+        self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
+        if a == 0 :
+            pygame.quit()        
 
 class Joueur:
     def __init__(self,image,nb_cases):
@@ -138,6 +154,7 @@ class Jeu:
         self.laby.afficher()
         self.joueur = Joueur('princesse.png',nb_cases)
         self.continuer = True
+        self.minuteur = Minuteur(10)
         self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
         pygame.display.flip()
     def loop(self):
@@ -159,6 +176,7 @@ class Jeu:
                     if pygame.key.get_pressed()[K_RIGHT]:
                         self.joueur.droite()
             self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
+            self.minuteur.affichertemps()
             pygame.display.flip()
         pygame.quit()
 
