@@ -1,10 +1,9 @@
 import pygame
 from pygame.locals import *
-from random import*
+from random import randint, choice
 from sys import exit
 import matplotlib.pyplot as plt
-from pile import Pile
-import time
+from Pile import Pile
 
 class Case:
     def __init__(self):
@@ -20,13 +19,11 @@ class Labyrinthe:
         pygame.init()
         pygame.display.set_caption('LABYRINTHE')
         self.fenetre = pygame.display.set_mode((640, 640))
-        self.fond = pygame.image.load("images/fondSol.png").convert()
+        self.fond = pygame.image.load("solFinal.png").convert()
         self.fenetre.blit(self.fond, (0,0))
         self.largeur = largeur
         self.hauteur = hauteur
         self.laby = [[Case() for i in range (self.hauteur)]for i in range (self.largeur)]
-        self.murs = []
-        self.arrivee = pygame.Rect(640-int(640/self.largeur/2)+10,640-int(640/self.largeur/2)+10,int(640/self.largeur),int(640/self.largeur))
 
 
     def __directions_possibles(self,i,j):
@@ -95,99 +92,57 @@ class Labyrinthe:
     def afficher(self):
         for i in range(self.largeur):
             color="r"
-            pygame.draw.rect(self.fond,(84,32,14),pygame.Rect(0,0,640,640),3)
+            pygame.draw.rect(self.fond,(255,0,255),pygame.Rect(0,0,640,640),1)
             for j in range(self.hauteur):
                 if self.laby[i][j].murS:
-                    rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i)*640/self.largeur),int((j+1)*640/self.largeur),int(640/self.largeur)+3,3))
-                    self.murs.append(rectangle)
+                    pygame.draw.line(self.fond,(255,0,255),[int((i)*640/self.largeur),int((j+1)*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
                 if self.laby[i][j].murE:
-                    rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i+1)*640/self.largeur),int(j*640/self.largeur),3,int(640/self.largeur)+3))
-                    self.murs.append(rectangle)
-            pygame.draw.circle(self.fond,(255,0,0),((int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2),int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2))),10)
+                    pygame.draw.line(self.fond,(255,0,255),[int((i+1)*640/self.largeur),int(j*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
 
+
+        
         #self.fenetre.blit()
         pygame.display.flip()
+    
+
         
-class Minuteur :
-
-    def __init__ (self, sec):
-        self.sec = sec
-        self.laby = Labyrinthe(nb_cases,nb_cases)
-        self.font = pygame.font.SysFont('impact', 30)
-        self.start = time.time()
-
-    def temps (self):
-        while self.sec > 0 :
-            print("test")
-            self.sec -= 1
-            return self.sec
-
-    def affichertemps(self):
-        a=int(abs(time.time() - self.start - self.sec))
-        self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
-        if a == 0 :
-            pygame.quit()        
 
 class Joueur:
-    def __init__(self,image,nb_cases,murs,arrivee):
+    def __init__(self,image,nb_cases):
         self.image = pygame.image.load(image).convert_alpha()
         self.orientation = 1
-        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = self.image.get_rect()
-        self.murs = murs
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-8,int(640/nb_cases)-8))
         pygame.display.flip()
-        self.but = arrivee
     def gauche (self):
-        if self.position[0] >= 0 and self.collision(4) == False:
-            self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
-            self.orientation = 4
-            self.position = self.position.move(-3,0)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
+        self.orientation = 4
+        self.position = self.position.move(-3,0)
     def droite (self):
-        if self.position[0] <= 640-self.position[2] and self.collision(2) == False:
-            self.joueur = pygame.transform.rotate(self.image,(self.orientation-2)*90)
-            self.orientation = 2
-            self.position = self.position.move(3,0)
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-2)*90)
+        self.orientation = 2
+        self.position = self.position.move(3,0)
     def haut (self):
-        if self.position[1] >= 0 and self.collision(1) == False:
-            self.joueur = pygame.transform.rotate(self.image,(self.orientation-1)*90)
-            self.position = self.position.move(0,-3)
-            self.orientation = 1
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-1)*90)
+        self.position = self.position.move(0,-3)
+        self.orientation = 1
     def bas (self):
-        if self.position[1] <= 640-self.position[3] and self.collision(3) == False:
-            self.joueur = pygame.transform.rotate(self.image,(self.orientation-3)*90)
-            self.orientation = 3
-            self.position = self.position.move(0,3)
-    def collision (self,direction):
-        '''Méthode qui renvoie True si la princesse essaie de se diriger sur un mur'''
-        self.test = self.position
-        self.test[3] += 0
-        if direction == 1:
-            self.test = self.test.move(0,-5)
-        elif direction == 2:
-            self.test = self.test.move(5,0)
-        elif direction == 3:
-            self.test = self.test.move(0,5)
-        elif direction == 4:
-            self.test = self.test.move(-5,0)
-        for mur in self.murs:
-            if pygame.Rect.colliderect(self.test,mur):
-                return True
-        return False
-    def fin_laby(self):
-        if pygame.Rect.colliderect(self.position,self.but):
-            return True
+        self.joueur = pygame.transform.rotate(self.image,(self.orientation-3)*90)
+        self.orientation = 3
+        self.position = self.position.move(0,3)
         
 class Jeu:
     def __init__(self):
         self.laby = Labyrinthe(nb_cases,nb_cases)
         self.laby.generer()
         self.laby.afficher()
-        self.joueur = Joueur('images/princesse2.png',nb_cases,self.laby.murs,self.laby.arrivee)
+        self.joueur = Joueur('princesse.png',nb_cases)
         self.continuer = True
-        self.minuteur = Minuteur(10)
         self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
+        P = Potion()
+        P.hasard()
         pygame.display.flip()
-        self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
+        
     def loop(self):
         pygame.key.set_repeat(20, 20)
         self.laby.fenetre.blit(self.laby.fond,(0,0))
@@ -198,23 +153,68 @@ class Jeu:
                 if event.type==pygame.QUIT:
                     self.continuer = False
                 elif event.type == KEYDOWN:
-                    if pygame.key.get_pressed()[self.touches[0]]:
+                    if pygame.key.get_pressed()[K_DOWN]:
                         self.joueur.bas()
-                    if pygame.key.get_pressed()[self.touches[1]]:
+                    if pygame.key.get_pressed()[K_UP]:
                         self.joueur.haut()
-                    if pygame.key.get_pressed()[self.touches[2]]:
+                    if pygame.key.get_pressed()[K_LEFT]:
                         self.joueur.gauche()
-                    if pygame.key.get_pressed()[self.touches[3]]:
+                    if pygame.key.get_pressed()[K_RIGHT]:
                         self.joueur.droite()
-                    fin = self.joueur.fin_laby()
-                    if fin == True:
-                        self.continuer = False
             self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
-            self.minuteur.affichertemps()
             pygame.display.flip()
         pygame.quit()
 
+
+### Class Potion ###
+
+class Potion():
+    
+    def __init__(self):
+        liste_potions = [1, 2, 3]
+        self.potion_vitesse = 1
+        self.potion_murs = 2
+        self.potion_temps = 3
         
+    def hasard(self):
+        P = Potion()
+        liste_potions = [1, 2, 3]
+        potion_utilisee = choice(liste_potions)
+        if potion_utilisee == 1 :
+            P.vitesse
+        if potion_utilisee == 3 :
+            P.temps
+        if potion_utilisee == 2 :
+            P.murs
+            
+    def vitesse(self):
+        potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
+        self.fenetre.blit(self.potion_verte, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            vitesse_princesse = vitesse_princesse + 5
+        
+    def temps(self):
+        potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
+        self.fenetre.blit(self.potion_jaune, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            chrono = chrono + 10
+        
+    def murs(self):
+        potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
+        self.fenetre.blit(self.potion_bleu, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            while chronos_mur != 3 :
+                collisions = False
+            mur_passé = 0
+            collision = False
+            while mur_passé < 3 :
+                if position_princesse == mur :
+                    mur_passé = mur_passé + 1
+                    
+
 
 ### Programme principal ###
 if __name__=='__main__':
@@ -236,4 +236,3 @@ if __name__=='__main__':
     #laby.afficher()
     jeu = Jeu()
     jeu.loop()
-
