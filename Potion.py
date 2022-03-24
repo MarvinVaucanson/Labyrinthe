@@ -140,23 +140,22 @@ class Jeu:
         self.continuer = True
         self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
         pygame.display.flip()
+        x = 0
+        y = 0 
         potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
         potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
         potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
-        x = 0
-        y = 0
         liste_potions = [potion_jaune, potion_bleu, potion_verte]
         loc = Rect(x, y, 0, 0)
         P = Potion(loc, potion_jaune, potion_verte, potion_bleu, liste_potions)
-        # laby == 32 :
         P.hasard(liste_potions)
-        potion_utilise = choice(liste_potions)
-        if potion_utilise == potion_jaune :
-            P.temps
-        if potion_utilise == potion_verte :
-            P.vitesse
-        if potion_utilise == potion_bleu :
-            P.murs
+        P.apparition()
+        if potion_utilisee == potion_jaune :
+            P.temps()
+        if potion_utilisee == potion_verte :
+            P.vitesse()
+        if potion_utilisee == potion_bleu :
+            P.murs()
     def loop(self):
         pygame.key.set_repeat(20, 20)
         self.laby.fenetre.blit(self.laby.fond,(0,0))
@@ -192,10 +191,18 @@ class Potion():
         self.position_potion = loc
         
     def hasard(self, liste_potions):
-        if laby != 3:
-            pass
-        else :
-            potion_utilisé = choice(liste_potions)
+        potion_utilisee = choice(liste_potions)
+    
+    def apparition(potion_utilisee):
+        if potion_utilisee == potion_temps : 
+            potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
+            pygame.display.flip()
+        if potion_utilisee == potion_vitesse :
+            potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
+            pygame.display.flip()
+        if potion_utilisee == potion_murs :
+            potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
+            pygame.display.flip()
         
     def vitesse(self):
         vitesse_princesse = vitesse_princesse + 5
