@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from random import randint, choice
+from random import*
 from sys import exit
 import matplotlib.pyplot as plt
 from pile import Pile
@@ -19,11 +19,13 @@ class Labyrinthe:
         pygame.init()
         pygame.display.set_caption('LABYRINTHE')
         self.fenetre = pygame.display.set_mode((640, 640))
-        self.fond = pygame.image.load("solFinal.png").convert()
+        self.fond = pygame.image.load("images/fondSol.png").convert()
         self.fenetre.blit(self.fond, (0,0))
         self.largeur = largeur
         self.hauteur = hauteur
         self.laby = [[Case() for i in range (self.hauteur)]for i in range (self.largeur)]
+        self.murs = []
+        self.arrivee = pygame.Rect(640-int(640/self.largeur/2)+10,640-int(640/self.largeur/2)+10,int(640/self.largeur),int(640/self.largeur))
 
 
     def __directions_possibles(self,i,j):
@@ -92,15 +94,16 @@ class Labyrinthe:
     def afficher(self):
         for i in range(self.largeur):
             color="r"
-            pygame.draw.rect(self.fond,(255,0,255),pygame.Rect(0,0,640,640),1)
+            pygame.draw.rect(self.fond,(84,32,14),pygame.Rect(0,0,640,640),3)
             for j in range(self.hauteur):
                 if self.laby[i][j].murS:
-                    pygame.draw.line(self.fond,(255,0,255),[int((i)*640/self.largeur),int((j+1)*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
+                    rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i)*640/self.largeur),int((j+1)*640/self.largeur),int(640/self.largeur)+3,3))
+                    self.murs.append(rectangle)
                 if self.laby[i][j].murE:
-                    pygame.draw.line(self.fond,(255,0,255),[int((i+1)*640/self.largeur),int(j*640/self.largeur)], [int((i+1)*640/self.largeur),int((j+1)*640/self.largeur)],1)
+                    rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i+1)*640/self.largeur),int(j*640/self.largeur),3,int(640/self.largeur)+3))
+                    self.murs.append(rectangle)
+            pygame.draw.circle(self.fond,(255,0,0),((int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2),int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2))),10)
 
-
-        
         #self.fenetre.blit()
         pygame.display.flip()
     
@@ -108,38 +111,64 @@ class Labyrinthe:
         
 
 class Joueur:
-    def __init__(self,image,nb_cases):
+    def __init__(self,image,nb_cases,murs,arrivee):
         self.image = pygame.image.load(image).convert_alpha()
         self.orientation = 1
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = self.image.get_rect()
-        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-8,int(640/nb_cases)-8))
+        self.murs = murs
         pygame.display.flip()
+        self.but = arrivee
     def gauche (self):
-        self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
-        self.orientation = 4
-        self.position = self.position.move(-3,0)
+        if self.position[0] >= 0 and self.collision(4) == False:
+            self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
+            self.orientation = 4
+            self.position = self.position.move(-3,0)
     def droite (self):
-        self.joueur = pygame.transform.rotate(self.image,(self.orientation-2)*90)
-        self.orientation = 2
-        self.position = self.position.move(3,0)
+        if self.position[0] <= 640-self.position[2] and self.collision(2) == False:
+            self.joueur = pygame.transform.rotate(self.image,(self.orientation-2)*90)
+            self.orientation = 2
+            self.position = self.position.move(3,0)
     def haut (self):
-        self.joueur = pygame.transform.rotate(self.image,(self.orientation-1)*90)
-        self.position = self.position.move(0,-3)
-        self.orientation = 1
+        if self.position[1] >= 0 and self.collision(1) == False:
+            self.joueur = pygame.transform.rotate(self.image,(self.orientation-1)*90)
+            self.position = self.position.move(0,-3)
+            self.orientation = 1
     def bas (self):
-        self.joueur = pygame.transform.rotate(self.image,(self.orientation-3)*90)
-        self.orientation = 3
-        self.position = self.position.move(0,3)
+        if self.position[1] <= 640-self.position[3] and self.collision(3) == False:
+            self.joueur = pygame.transform.rotate(self.image,(self.orientation-3)*90)
+            self.orientation = 3
+            self.position = self.position.move(0,3)
+    def collision (self,direction):
+        '''Méthode qui renvoie True si la princesse essaie de se diriger sur un mur'''
+        self.test = self.position
+        self.test[3] += 0
+        if direction == 1:
+            self.test = self.test.move(0,-5)
+        elif direction == 2:
+            self.test = self.test.move(5,0)
+        elif direction == 3:
+            self.test = self.test.move(0,5)
+        elif direction == 4:
+            self.test = self.test.move(-5,0)
+        for mur in self.murs:
+            if pygame.Rect.colliderect(self.test,mur):
+                return True
+        return False
+    def fin_laby(self):
+        if pygame.Rect.colliderect(self.position,self.but):
+            return True
         
 class Jeu:
     def __init__(self):
         self.laby = Labyrinthe(nb_cases,nb_cases)
         self.laby.generer()
         self.laby.afficher()
-        self.joueur = Joueur('princesse.png',nb_cases)
+        self.joueur = Joueur('images/princesse2.png',nb_cases,self.laby.murs,self.laby.arrivee)
         self.continuer = True
         self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
         pygame.display.flip()
+        self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
     def loop(self):
         pygame.key.set_repeat(20, 20)
         self.laby.fenetre.blit(self.laby.fond,(0,0))
@@ -150,14 +179,17 @@ class Jeu:
                 if event.type==pygame.QUIT:
                     self.continuer = False
                 elif event.type == KEYDOWN:
-                    if pygame.key.get_pressed()[K_DOWN]:
+                    if pygame.key.get_pressed()[self.touches[0]]:
                         self.joueur.bas()
-                    if pygame.key.get_pressed()[K_UP]:
+                    if pygame.key.get_pressed()[self.touches[1]]:
                         self.joueur.haut()
-                    if pygame.key.get_pressed()[K_LEFT]:
+                    if pygame.key.get_pressed()[self.touches[2]]:
                         self.joueur.gauche()
-                    if pygame.key.get_pressed()[K_RIGHT]:
+                    if pygame.key.get_pressed()[self.touches[3]]:
                         self.joueur.droite()
+                    fin = self.joueur.fin_laby()
+                    if fin == True:
+                        self.continuer = False
             self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
             pygame.display.flip()
         pygame.quit()
