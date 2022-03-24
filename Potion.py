@@ -139,23 +139,10 @@ class Jeu:
         self.joueur = Joueur('princesse.png',nb_cases)
         self.continuer = True
         self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
+        P = Potion()
+        P.hasard()
         pygame.display.flip()
-        x = 0
-        y = 0 
-        potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
-        potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
-        potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
-        liste_potions = [potion_jaune, potion_bleu, potion_verte]
-        loc = Rect(x, y, 0, 0)
-        P = Potion(loc, potion_jaune, potion_verte, potion_bleu, liste_potions)
-        P.hasard(liste_potions)
-        P.apparition()
-        if potion_utilisee == potion_jaune :
-            P.temps()
-        if potion_utilisee == potion_verte :
-            P.vitesse()
-        if potion_utilisee == potion_bleu :
-            P.murs()
+        
     def loop(self):
         pygame.key.set_repeat(20, 20)
         self.laby.fenetre.blit(self.laby.fond,(0,0))
@@ -183,42 +170,50 @@ class Jeu:
 
 class Potion():
     
-    def __init__(self, loc, potion_jaune, potion_verte, potion_bleu, liste_potions):
-        liste_potions = liste_potions
-        potion_vitesse = potion_verte
-        potion_temps = potion_jaune
-        potion_murs = potion_bleu
-        self.position_potion = loc
+    def __init__(self):
+        liste_potions = [1, 2, 3]
+        self.potion_vitesse = 1
+        self.potion_murs = 2
+        self.potion_temps = 3
         
-    def hasard(self, liste_potions):
+    def hasard(self):
+        P = Potion()
+        liste_potions = [1, 2, 3]
         potion_utilisee = choice(liste_potions)
-    
-    def apparition(potion_utilisee):
-        if potion_utilisee == potion_temps : 
-            potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
-            pygame.display.flip()
-        if potion_utilisee == potion_vitesse :
-            potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
-            pygame.display.flip()
-        if potion_utilisee == potion_murs :
-            potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
-            pygame.display.flip()
-        
+        if potion_utilisee == 1 :
+            P.vitesse
+        if potion_utilisee == 3 :
+            P.temps
+        if potion_utilisee == 2 :
+            P.murs
+            
     def vitesse(self):
-        vitesse_princesse = vitesse_princesse + 5
+        potion_verte = pygame.image.load("PotionVerte.png").convert_alpha()
+        self.fenetre.blit(self.potion_verte, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            vitesse_princesse = vitesse_princesse + 5
         
     def temps(self):
-        chrono = chrono + 10
+        potion_jaune = pygame.image.load("PotionJaune.png").convert_alpha()
+        self.fenetre.blit(self.potion_jaune, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            chrono = chrono + 10
         
     def murs(self):
-        while chronos_mur != 3 :
-            collisions = False
-        mur_passé = 0
-        collision = False
-        while mur_passé < 3 :
-            if position_princesse == mur :
-                mur_passé = mur_passé + 1
-                
+        potion_bleu = pygame.image.load("PotionBleu.png").convert_alpha()
+        self.fenetre.blit(self.potion_bleu, (0,0))
+        pygame.display.flip()
+        if coo_princesse == coo_potion :
+            while chronos_mur != 3 :
+                collisions = False
+            mur_passé = 0
+            collision = False
+            while mur_passé < 3 :
+                if position_princesse == mur :
+                    mur_passé = mur_passé + 1
+                    
 
 
 ### Programme principal ###
