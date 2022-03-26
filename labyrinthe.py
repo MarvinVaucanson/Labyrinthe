@@ -27,6 +27,7 @@ class Labyrinthe:
         self.laby = [[Case() for i in range (self.hauteur)]for i in range (self.largeur)]
         self.murs = []
         self.arrivee = pygame.Rect(640-int(640/self.largeur/2)+10,640-int(640/self.largeur/2)+10,int(640/self.largeur),int(640/self.largeur))
+        self.fini = False
 
 
     def __directions_possibles(self,i,j):
@@ -129,14 +130,13 @@ class Minuteur :
             pygame.quit()        
 
 class Joueur:
-    def __init__(self,image,nb_cases,murs,arrivee):
+    def __init__(self,image,nb_cases,murs):
         self.image = pygame.image.load(image).convert_alpha()
         self.orientation = 1
         self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = self.image.get_rect()
         self.murs = murs
         pygame.display.flip()
-        self.but = arrivee
     def gauche (self):
         if self.position[0] >= 0 and self.collision(4) == False:
             self.joueur = pygame.transform.rotate(self.image,(self.orientation-4)*90)
@@ -162,56 +162,64 @@ class Joueur:
         self.test = self.position
         self.test[3] += 0
         if direction == 1:
-            self.test = self.test.move(0,-5)
+            self.test = self.test.move(0,-3)
         elif direction == 2:
-            self.test = self.test.move(5,0)
+            self.test = self.test.move(3,0)
         elif direction == 3:
-            self.test = self.test.move(0,5)
+            self.test = self.test.move(0,3)
         elif direction == 4:
-            self.test = self.test.move(-5,0)
+            self.test = self.test.move(-3,0)
         for mur in self.murs:
             if pygame.Rect.colliderect(self.test,mur):
                 return True
         return False
-    def fin_laby(self):
-        if pygame.Rect.colliderect(self.position,self.but):
+    def fin_laby(self,arrivee):
+        if pygame.Rect.colliderect(self.position,arrivee):
             return True
         
 class Jeu:
     def __init__(self):
-        self.laby = Labyrinthe(nb_cases,nb_cases)
-        self.laby.generer()
-        self.laby.afficher()
-        self.joueur = Joueur('images/princesse2.png',nb_cases,self.laby.murs,self.laby.arrivee)
         self.continuer = True
-        self.minuteur = Minuteur(10)
-        self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
-        pygame.display.flip()
+        self.minuteur = Minuteur(60)
         self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
+        self.jeu_fini = False
+        self.laby_fini = False
+        self.nb_cases = 5
     def loop(self):
         pygame.key.set_repeat(20, 20)
-        self.laby.fenetre.blit(self.laby.fond,(0,0))
         while self.continuer:
-            self.laby.fenetre.blit(self.laby.fond,(0,0))
-            self.laby.fenetre.blit(self.laby.fenetre,(0,0))
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    self.continuer = False
-                elif event.type == KEYDOWN:
-                    if pygame.key.get_pressed()[self.touches[0]]:
-                        self.joueur.bas()
-                    if pygame.key.get_pressed()[self.touches[1]]:
-                        self.joueur.haut()
-                    if pygame.key.get_pressed()[self.touches[2]]:
-                        self.joueur.gauche()
-                    if pygame.key.get_pressed()[self.touches[3]]:
-                        self.joueur.droite()
-                    fin = self.joueur.fin_laby()
-                    if fin == True:
-                        self.continuer = False
-            self.laby.fenetre.blit(self.joueur.image,self.joueur.position)
-            self.minuteur.affichertemps()
-            pygame.display.flip()
+            while self.jeu_fini == False:
+                laby = Labyrinthe(self.nb_cases,self.nb_cases)
+                laby.generer()
+                laby.afficher()
+                joueur = Joueur('images/princesse2.png',self.nb_cases,laby.murs)
+                laby.fenetre.blit(joueur.image,joueur.position)
+                laby.fenetre.blit(laby.fenetre,(0,0))
+                pygame.display.flip()
+                while laby.fini == False:
+                    laby.fenetre.blit(laby.fond,(0,0))
+                    laby.fenetre.blit(laby.fenetre,(0,0))
+                    for event in pygame.event.get():
+                        if event.type==pygame.QUIT:
+                            self.continuer = False
+                            laby.fini = True
+                            self.jeu_fini = True
+                        elif event.type == KEYDOWN:
+                            if pygame.key.get_pressed()[self.touches[0]]:
+                                joueur.bas()
+                            if pygame.key.get_pressed()[self.touches[1]]:
+                                joueur.haut()
+                            if pygame.key.get_pressed()[self.touches[2]]:
+                                joueur.gauche()
+                            if pygame.key.get_pressed()[self.touches[3]]:
+                                joueur.droite()
+                            fin = joueur.fin_laby(laby.arrivee)
+                            if fin == True:
+                                laby.fini = True
+                    laby.fenetre.blit(joueur.image,joueur.position)
+                    self.minuteur.affichertemps()
+                    pygame.display.flip()
+                self.nb_cases = self.nb_cases + 2
         pygame.quit()
 
         
