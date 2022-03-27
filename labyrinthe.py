@@ -104,7 +104,7 @@ class Labyrinthe:
                 if self.laby[i][j].murE:
                     rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i+1)*640/self.largeur),int(j*640/self.largeur),3,int(640/self.largeur)+3))
                     self.murs.append(rectangle)
-            pygame.draw.circle(self.fond,(255,0,0),((int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2),int(640/self.largeur)*(self.largeur-1)+3+int((640/nb_cases)/2))),10)
+        pygame.draw.circle(self.fond,(255,0,0),(int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2),int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2)),10)
 
         #self.fenetre.blit()
         pygame.display.flip()
@@ -185,41 +185,42 @@ class Jeu:
         self.jeu_fini = False
         self.laby_fini = False
         self.nb_cases = 5
+        self.score = 0
     def loop(self):
         pygame.key.set_repeat(20, 20)
         while self.continuer:
-            while self.jeu_fini == False:
-                laby = Labyrinthe(self.nb_cases,self.nb_cases)
-                laby.generer()
-                laby.afficher()
-                joueur = Joueur('images/princesse2.png',self.nb_cases,laby.murs)
-                laby.fenetre.blit(joueur.image,joueur.position)
+            laby = Labyrinthe(self.nb_cases,self.nb_cases)
+            laby.generer()
+            laby.afficher()
+            joueur = Joueur('images/princesse2.png',self.nb_cases,laby.murs)
+            laby.fenetre.blit(joueur.image,joueur.position)
+            laby.fenetre.blit(laby.fenetre,(0,0))
+            pygame.display.flip()
+            while laby.fini == False:
+                laby.fenetre.blit(laby.fond,(0,0))
                 laby.fenetre.blit(laby.fenetre,(0,0))
-                pygame.display.flip()
-                while laby.fini == False:
-                    laby.fenetre.blit(laby.fond,(0,0))
-                    laby.fenetre.blit(laby.fenetre,(0,0))
-                    for event in pygame.event.get():
-                        if event.type==pygame.QUIT:
-                            self.continuer = False
+                for event in pygame.event.get():
+                    if event.type==pygame.QUIT:
+                        self.continuer = False
+                        laby.fini = True
+                        self.jeu_fini = True
+                    elif event.type == KEYDOWN:
+                        if pygame.key.get_pressed()[self.touches[0]]:
+                            joueur.bas()
+                        if pygame.key.get_pressed()[self.touches[1]]:
+                            joueur.haut()
+                        if pygame.key.get_pressed()[self.touches[2]]:
+                            joueur.gauche()
+                        if pygame.key.get_pressed()[self.touches[3]]:
+                            joueur.droite()
+                        fin = joueur.fin_laby(laby.arrivee)
+                        if fin == True:
                             laby.fini = True
-                            self.jeu_fini = True
-                        elif event.type == KEYDOWN:
-                            if pygame.key.get_pressed()[self.touches[0]]:
-                                joueur.bas()
-                            if pygame.key.get_pressed()[self.touches[1]]:
-                                joueur.haut()
-                            if pygame.key.get_pressed()[self.touches[2]]:
-                                joueur.gauche()
-                            if pygame.key.get_pressed()[self.touches[3]]:
-                                joueur.droite()
-                            fin = joueur.fin_laby(laby.arrivee)
-                            if fin == True:
-                                laby.fini = True
-                    laby.fenetre.blit(joueur.image,joueur.position)
-                    self.minuteur.affichertemps()
-                    pygame.display.flip()
-                self.nb_cases = self.nb_cases + 2
+                laby.fenetre.blit(joueur.image,joueur.position)
+                self.minuteur.affichertemps()
+                pygame.display.flip()
+            self.nb_cases = self.nb_cases + 2
+            self.score = self.score + 1
         pygame.quit()
 
         
