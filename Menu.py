@@ -13,6 +13,30 @@ class Fenetres():
             
         fond = pygame.image.load("Textures/Chargement.png").convert()
         fenetre.blit(fond,(0,0))
+        
+        continuer = True
+        while continuer:
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    continuer = False
+                        
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        continuer = False
+                        
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        continuer = False
+                        pygame.display.update()
+                        continuer = True
+                        pygame.display.update()
+                        Fenetres.menu()
+                        pygame.display.update()
+                        
+            pygame.display.flip()
+        pygame.quit()
+        
     
     
     def menu():
@@ -32,23 +56,34 @@ class Fenetres():
         Sponsor = pygame.image.load('Textures/logoCochonLicorne2.png').convert_alpha()
         Sponsor = pygame.transform.scale(Sponsor, (300,75))
         fenetre.blit(Sponsor,(0,535))
+        
+        jouer = pygame.image.load('Textures/jouer2.png').convert_alpha()
+        jouer = pygame.transform.scale(jouer, (300,75))
+        fenetre.blit(jouer,(170,250))
+        
+        credits = pygame.image.load('Textures/credits2.png').convert_alpha()
+        credits = pygame.transform.scale(credits, (300,75))
+        fenetre.blit(credits,(170,370))
+        
+        quitter = pygame.image.load('Textures/quitter2.png').convert_alpha()
+        quitter = pygame.transform.scale(quitter, (300,75))
+        fenetre.blit(quitter,(170,490))
+        
+        """select1 = pygame.image.load('Textures/select.png').convert_alpha()
+        select1 = pygame.transform.scale(select1, (300,75))
+        fenetre.blit(jouer,(170,250))"""
+        
         continuer = True
         while continuer:
-        
+            
             mouse = pygame.mouse.get_pos()
-            jouer_bouton.draw()
-            credits_bouton.draw()
-            quitter_bouton.draw()
-        
-            pygame.display.update()
-        
-        
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
         
         # BOUTON JOUER #
-                '''if event.type == MOUSEBUTTONDOWN:
+                if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 250 <= mouse[1] <= 350:
                             continuer = False
@@ -57,7 +92,7 @@ class Fenetres():
                             pygame.display.update()
                             jeu=Jeu()
                             jeu.loop()
-                            pygame.display.update()'''
+                            pygame.display.update()
         
         # BOUTTON CREDITS #
                 if event.type == MOUSEBUTTONDOWN:
@@ -108,12 +143,16 @@ class Fenetres():
     
         credits = pygame.image.load("Textures/Nomscredits.png").convert_alpha()
         fenetre.blit(credits,(190,300))
+        
+        retour = pygame.image.load('Textures/retour.png').convert_alpha()
+        retour = pygame.transform.scale(retour, (150,150))
+        fenetre.blit(jouer,(550,550))
     
         continuer = True
         while continuer:
             
             mouse = pygame.mouse.get_pos()
-            retour_bouton.draw()
+            
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -146,12 +185,16 @@ class Fenetres():
         fond = pygame.image.load("Textures/tuto.png").convert()
         rectscreen = fenetre.get_rect()
         fenetre.blit(fond,(0,0))
+        
+        retour = pygame.image.load('Textures/retour.png').convert_alpha()
+        retour = pygame.transform.scale(retour, (150,150))
+        fenetre.blit(jouer,(550,550))
     
         continuer = True
         while continuer:
     
             mouse = pygame.mouse.get_pos()
-            retour_bouton.draw()
+            
     
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -174,55 +217,10 @@ class Fenetres():
             pygame.display.update()
         pygame.quit()
 
-class Bouton():
-    def __init__(self, x, y, image, scale):
-        width = image.get_width()
-        height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width*scale),int(height * scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-
-    def draw(self):
-        fenetre.blit(self.image, (self.rect.x, self.rect.y))
-
-Fenetres.chargement()
 
 
     ### MENU DE BASE ###
-if __name__=='__main__':    
-    
-    jouer_img = pygame.image.load('Textures/jouer2.png').convert_alpha()
-    credits_img = pygame.image.load('Textures/credits2.png').convert_alpha()
-    quitter_img = pygame.image.load('Textures/quitter2.png').convert_alpha()
-    retour_img = pygame.image.load('Textures/retour.png').convert_alpha()
-    select1_img = pygame.image.load('Textures/select.png').convert_alpha()
-   
-    jouer_bouton = Bouton(170, 250, jouer_img, 0.75)
-    credits_bouton = Bouton(170, 370, credits_img, 0.75)
-    quitter_bouton = Bouton(170, 490, quitter_img, 0.75)
-    retour_bouton = Bouton(550, 550, retour_img, 0.35)
-    
-    continuer = True
-    while continuer:
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                continuer = False
-                    
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    continuer = False
-                    
-            if event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    continuer = False
-                    pygame.display.update()
-                    continuer = True
-                    pygame.display.update()
-                    Fenetres.menu()
-                    pygame.display.update()
-                    
-                        
-        pygame.display.update()
-    pygame.quit()
+if __name__=='__main__':
+
+    Fenetres.chargement()
     
