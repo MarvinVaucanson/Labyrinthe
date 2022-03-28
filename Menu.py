@@ -1,67 +1,19 @@
 import pygame, sys
 from pygame.locals import*
-pygame.mixer.init() 
 
 
-
-width = 640
-height = 640
-pygame.init()
-fenetre = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Lancement En Cours ...')
-    
-fond = pygame.image.load("Textures/Chargement.png").convert()
-fenetre.blit(fond,(0,0))
-    
-    
-# IMAGES #
-
-jouer_img = pygame.image.load('Textures/jouer2.png').convert_alpha()
-credits_img = pygame.image.load('Textures/credits2.png').convert_alpha()
-quitter_img = pygame.image.load('Textures/quitter2.png').convert_alpha()
-retour_img = pygame.image.load('Textures/retour.png').convert_alpha()
-select1_img = pygame.image.load('Textures/select.png').convert_alpha()
-
-
-class Bouton():
-    def __init__(self, x, y, image, scale):
-        width = image.get_width()
-        height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width*scale),int(height * scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-
-    def draw(self):
-        fenetre.blit(self.image, (self.rect.x, self.rect.y))
-
-    # BOUTONS #
-    
-jouer_bouton = Bouton(170, 250, jouer_img, 0.75)
-credits_bouton = Bouton(170, 370, credits_img, 0.75)
-quitter_bouton = Bouton(170, 490, quitter_img, 0.75)
-retour_bouton = Bouton(550, 550, retour_img, 0.35)
-
-'''class Chargement(pygame.sprite.Sprite):
-    
-    ecranChargement = pygame.image.load("Textures/SpriteChargement.png").convert_alpha()
-    sequences = [(0,13,True)]
-    
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        
-        self.image = Chargement.ecranChargement.subsurface(pygame.Rect(0,0,640,640))
-        self.rect = pygame.Rect(0,0,640,640)
-        self.rect.botton = HEIGTH
-        
-        self.numeroSequence = 0
-        self.flip = False
-        
-        self.deltaTime = 0
-        self.vitesse = int(round(26/FPS))'''
-    
-    
-    
 class Fenetres():
+    
+    def chargement():
+        width = 640
+        height = 640
+        pygame.init()
+        fenetre = pygame.display.set_mode((width, height))
+        pygame.display.set_caption('Lancement En Cours ...')
+            
+        fond = pygame.image.load("Textures/Chargement.png").convert()
+        fenetre.blit(fond,(0,0))
+    
     
     def menu():
         width = 640
@@ -99,13 +51,18 @@ class Fenetres():
                 '''if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 250 <= mouse[1] <= 350:
+                            continuer = False
+                            pygame.display.update()
+                            continuer = True
+                            pygame.display.update()
+                            jeu=Jeu()
+                            jeu.loop()
                             pygame.display.update()'''
         
         # BOUTTON CREDITS #
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 370 <= mouse[1] <= 470:
-                            '''clic.play()'''
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -217,13 +174,37 @@ class Fenetres():
             pygame.display.update()
         pygame.quit()
 
+class Bouton():
+    def __init__(self, x, y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image, (int(width*scale),int(height * scale)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw(self):
+        fenetre.blit(self.image, (self.rect.x, self.rect.y))
+
+Fenetres.chargement()
 
 
     ### MENU DE BASE ###
 if __name__=='__main__':    
+    
+    jouer_img = pygame.image.load('Textures/jouer2.png').convert_alpha()
+    credits_img = pygame.image.load('Textures/credits2.png').convert_alpha()
+    quitter_img = pygame.image.load('Textures/quitter2.png').convert_alpha()
+    retour_img = pygame.image.load('Textures/retour.png').convert_alpha()
+    select1_img = pygame.image.load('Textures/select.png').convert_alpha()
+   
+    jouer_bouton = Bouton(170, 250, jouer_img, 0.75)
+    credits_bouton = Bouton(170, 370, credits_img, 0.75)
+    quitter_bouton = Bouton(170, 490, quitter_img, 0.75)
+    retour_bouton = Bouton(550, 550, retour_img, 0.35)
+    
     continuer = True
     while continuer:
-            
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 continuer = False
