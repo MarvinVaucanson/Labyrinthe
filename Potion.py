@@ -109,6 +109,12 @@ class Labyrinthe:
         #self.fenetre.blit()
         pygame.display.flip()
         
+    def effacer_mur(self,mur):
+        pygame.draw.rect(self.fond,(193, 196, 192),mur,3)
+        pygame.display.flip()
+        
+        
+                
 class Minuteur :
 
     def __init__ (self, sec):
@@ -141,6 +147,7 @@ class Joueur:
         self.murs = murs
         self.vitesse = 3
         self.casser = False
+        self.mur_casse = None
         pygame.display.flip()
     def gauche (self):
         if self.position[0] >= 0 and self.collision(4) == False:
@@ -177,8 +184,9 @@ class Joueur:
         for i in range (len(self.murs)):
             if pygame.Rect.colliderect(self.test,self.murs[i]):
                 if self.casser == True :
-                    del self.murs[i]
                     self.casser = False
+                    self.mur_casse = self.murs[i]
+                    del self.murs[i]
                 return True
         return False
         
@@ -199,7 +207,7 @@ class Joueur:
 class Jeu:
     def __init__(self):
         self.continuer = True
-        self.minuteur = Minuteur(60)
+        self.minuteur = Minuteur(150)
         self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
         self.jeu_fini = False
         self.laby_fini = False
@@ -256,6 +264,8 @@ class Jeu:
                                     joueur.casser_mur()
                                 del potion
                                 potions = False
+                        if joueur.mur_casse != None:
+                            laby.effacer_mur(joueur.mur_casse)
                 laby.fenetre.blit(joueur.image,joueur.position)
                 if potions == True:
                     laby.fenetre.blit(potion.image,(potion.x,potion.y))
