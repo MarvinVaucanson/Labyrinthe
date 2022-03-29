@@ -1,4 +1,4 @@
-    import pygame
+import pygame
 from pygame.locals import *
 from random import*
 from sys import exit
@@ -56,20 +56,20 @@ class Labyrinthe:
             self.laby[i][j+1].vue = True # cette case est alors marquée comme vue
             pile.empiler((i, j+1)) # on stocke les coordonnées de cette case dans la pile
         elif dir == 'N': # on se dirige vers le nord
-            self.laby[i][j].murN = False 
-            self.laby[i][j-1].murS = False 
-            self.laby[i][j-1].vue = True 
-            pile.empiler((i, j-1)) 
+            self.laby[i][j].murN = False
+            self.laby[i][j-1].murS = False
+            self.laby[i][j-1].vue = True
+            pile.empiler((i, j-1))
         elif dir == 'E': # on se dirige vers l'est
-            self.laby[i][j].murE = False 
-            self.laby[i+1][j].murW = False 
-            self.laby[i+1][j].vue = True 
-            pile.empiler((i+1, j)) 
+            self.laby[i][j].murE = False
+            self.laby[i+1][j].murW = False
+            self.laby[i+1][j].vue = True
+            pile.empiler((i+1, j))
         elif dir == 'W': # on se dirige vers l' ouest
-            self.laby[i][j].murW = False 
-            self.laby[i-1][j].murE = False 
-            self.laby[i-1][j].vue = True 
-            pile.empiler((i-1, j)) 
+            self.laby[i][j].murW = False
+            self.laby[i-1][j].murE = False
+            self.laby[i-1][j].vue = True
+            pile.empiler((i-1, j))
 
 
 
@@ -104,12 +104,16 @@ class Labyrinthe:
                     rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i+1)*640/self.largeur),int(j*640/self.largeur),3,int(640/self.largeur)+3))
                     self.murs.append(rectangle)
         pygame.draw.circle(self.fond,(255,0,0),(int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2),int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2)),10)
-        
+
         #self.fenetre.blit()
         pygame.display.flip()
-        
-        
-        
+
+    def effacer_mur(self,mur):
+        pygame.draw.rect(self.fond,(193, 196, 192),mur,3)
+        pygame.display.flip()
+
+
+
 class Minuteur :
     def __init__ (self, sec):
         self.sec = sec
@@ -128,12 +132,10 @@ class Minuteur :
         a=int(abs(time.time() - self.start - self.sec))
         self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
         if a == 0 :
-            continuer = False
-            pygame.display.update()
-            continuer = True
-            pygame.display.update()
-            Fenetres.fin()
-            pygame.display.update()        
+            pygame.quit()
+
+    def augmenter_temps(self) :
+        self.sec = self.sec + 20
 
 class Joueur:
     def __init__(self,image,nb_cases,murs):
@@ -142,6 +144,9 @@ class Joueur:
         self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = self.image.get_rect()
         self.murs = murs
+        self.vitesse = 3
+        self.casser = False
+        self.mur_casse = None
         pygame.display.flip()
     def gauche (self):
         if self.position[0] >= 0 and self.collision(4) == False:
@@ -168,21 +173,36 @@ class Joueur:
         self.test = self.position
         self.test[3] += 0
         if direction == 1:
-            self.test = self.test.move(0,-3)
+            self.test = self.test.move(0,-self.vitesse)
         elif direction == 2:
-            self.test = self.test.move(3,0)
+            self.test = self.test.move(self.vitesse,0)
         elif direction == 3:
-            self.test = self.test.move(0,3)
+            self.test = self.test.move(0,self.vitesse)
         elif direction == 4:
-            self.test = self.test.move(-3,0)
-        for mur in self.murs:
-            if pygame.Rect.colliderect(self.test,mur):
+            self.test = self.test.move(-self.vitesse,0)
+        for i in range (len(self.murs)):
+            if pygame.Rect.colliderect(self.test,self.murs[i]):
+                if self.casser == True :
+                    self.casser = False
+                    self.mur_casse = self.murs[i]
+                    del self.murs[i]
                 return True
         return False
+
+    def potions(self, potion):
+        if pygame.Rect.colliderect(self.position,potion.position):
+            return True
+
     def fin_laby(self,arrivee):
         if pygame.Rect.colliderect(self.position,arrivee):
             return True
-        
+
+    def augmenter_vitesse(self):
+        self.vitesse = self.vitesse + 1
+
+    def casser_mur(self) :
+        self.casser = True
+
 class Jeu:
     def __init__(self):
         self.continuer = True
@@ -192,18 +212,28 @@ class Jeu:
         self.laby_fini = False
         self.nb_cases = 5
         self.score = 0
+        self.choix_potions = ["verte", "jaune", "bleue"]
+        self.potion = choice(self.choix_potions)
     def loop(self):
         pygame.key.set_repeat(20, 20)
         while self.continuer:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
             laby.generer()
             laby.afficher()
-            joueur = Joueur('Textures/princesse2.png',self.nb_cases,laby.murs)
+            self.potion = choice(self.choix_potions)
+            if self.potion == "verte" :
+                potion = Potions('Textures/PotionVerte.png', self.nb_cases)
+            elif self.potion == "jaune" :
+                potion = Potions('Textures/PotionJaune.png', self.nb_cases)
+            elif self.potion == "bleue" :
+                potion = Potions('Textures/PotionBleue.png', self.nb_cases)
+            laby.fenetre.blit(potion.image,(potion.x,potion.y))
+            joueur = Joueur('Textures/princesse.png',self.nb_cases,laby.murs)
             laby.fenetre.blit(joueur.image,joueur.position)
+            potions = True
             laby.fenetre.blit(laby.fenetre,(0,0))
             pygame.display.flip()
             while laby.fini == False:
-                
                 laby.fenetre.blit(laby.fond,(0,0))
                 laby.fenetre.blit(laby.fenetre,(0,0))
                 for event in pygame.event.get():
@@ -223,36 +253,60 @@ class Jeu:
                         fin = joueur.fin_laby(laby.arrivee)
                         if fin == True:
                             laby.fini = True
+                        if potions == True:
+                            if joueur.potions(potion) == True :
+                                if self.potion == "verte" :
+                                    joueur.augmenter_vitesse()
+                                elif self.potion == "jaune" :
+                                    self.minuteur.augmenter_temps()
+                                elif self.potion == "bleue" :
+                                    joueur.casser_mur()
+                                del potion
+                                potions = False
+                        if joueur.mur_casse != None:
+                            laby.effacer_mur(joueur.mur_casse)
+                            joueur.mur_casse = None
                 laby.fenetre.blit(joueur.image,joueur.position)
+                if potions == True:
+                    laby.fenetre.blit(potion.image,(potion.x,potion.y))
                 self.minuteur.affichertemps()
                 pygame.display.flip()
-                            
             self.nb_cases = self.nb_cases + 2
             self.score = self.score + 1
         pygame.quit()
 
-        
+
+class Potions :
+    def __init__(self, image, nb_cases):
+        self.x = int((randint(0, nb_cases-1))*640/nb_cases)
+        self.y = int((randint(0, nb_cases-1))*640/nb_cases)
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
+        self.position = pygame.Rect(self.x, self.y, (int(640/nb_cases)-16), (int(640/nb_cases)-16))
+        pygame.display.flip()
+
+
 class Fenetres():
-    
+
     def chargement():
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Lancement En Cours ...')
-            
+
         fond = pygame.image.load("Textures/Chargement.png").convert()
         fenetre.blit(fond,(0,0))
-        
+
         continuer = True
         while continuer:
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-                        
+
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         continuer = False
-                        
+
                 if event.type == KEYDOWN:
                     if event.key == K_SPACE:
                         continuer = False
@@ -261,71 +315,71 @@ class Fenetres():
                         pygame.display.flip
                         Fenetres.menu()
                         pygame.display.flip
-                        
+
             pygame.display.update()
         pygame.quit()
-        
-    
-    
+
+
+
     def menu():
         pygame.init()
         fenetre = pygame.display.set_mode((640, 640))
         pygame.display.set_caption('Bienvenue dans notre labyrinthe !')
-        
+
         fond = pygame.image.load("Textures/fondMenu.png").convert()
         fenetre.blit(fond,(0,0))
-        
+
         infos = pygame.image.load('Textures/BoutonOptions.png').convert_alpha()
         infos = pygame.transform.scale(infos, (75,75))
         fenetre.blit(infos,(520,520))
-        
+
         Sponsor = pygame.image.load('Textures/logoCochonLicorne2.png').convert_alpha()
         Sponsor = pygame.transform.scale(Sponsor, (300,75))
         fenetre.blit(Sponsor,(0,535))
-        
+
         jouer = pygame.image.load('Textures/jouer2.png').convert_alpha()
         jouer = pygame.transform.scale(jouer, (300,75))
         fenetre.blit(jouer,(170,250))
-        
-        select2 = pygame.image.load('Textures/select.png').convert_alpha()
+
+        """select2 = pygame.image.load('Textures/select.png').convert_alpha()
         select2 = pygame.transform.scale(select2, (300,75))
-        fenetre.blit(select2,(170,370))   
-             
+        fenetre.blit(select2,(170,370))"""
+
         credits = pygame.image.load('Textures/credits2.png').convert_alpha()
         credits = pygame.transform.scale(credits, (300,75))
         fenetre.blit(credits,(170,370))
-        
+
         quitter = pygame.image.load('Textures/quitter2.png').convert_alpha()
         quitter = pygame.transform.scale(quitter, (300,75))
         fenetre.blit(quitter,(170,490))
-        
+
         """select1 = pygame.image.load('Textures/select.png').convert_alpha()
         select1 = pygame.transform.scale(select1, (300,75))
         fenetre.blit(select1,(170,250))"""
-        
 
-        
+
+
         pygame.display.flip()
-        
+
         continuer = True
         while continuer:
-            
+
             mouse = pygame.mouse.get_pos()
             selec = 0
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-                    
+
                 """if event.type == KEYDOWN:
                     selec = selec + 1
                     jouer = pygame.image.load('Textures/jouer2.png').convert_alpha()
                     jouer = pygame.transform.scale(jouer, (300,75))
-                    fenetre.blit(jouer,(170,250))                    
+                    fenetre.blit(jouer,(170,250))
                     pygame.display.update()
                     select2 = pygame.image.load('Textures/select.png').convert_alpha()
                     select2 = pygame.transform.scale(select2, (300,75))
-                    fenetre.blit(select2,(170,370))               
+                    fenetre.blit(select2,(170,370))
                     pygame.display.update()
                     if event.key == K_SPACE:
                         if selec == 1:
@@ -335,10 +389,10 @@ class Fenetres():
                             pygame.display.update()
                             Fenetres.screenCredits()
                             pygame.display.update()"""
-                    
-                    
-                
-        
+
+
+
+
         # BOUTON JOUER #
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -350,7 +404,7 @@ class Fenetres():
                             jeu=Jeu()
                             jeu.loop()
                             pygame.display.update()
-        
+
         # BOUTTON CREDITS #
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -361,7 +415,7 @@ class Fenetres():
                             pygame.display.update()
                             Fenetres.screenCredits()
                             pygame.display.update()
-        
+
         # BOUTTON INFOS #
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -372,22 +426,22 @@ class Fenetres():
                             pygame.display.update()
                             Fenetres.screenInfos()
                             pygame.display.update()
-        
+
         # BOUTTON QUITTER #
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 490 <= mouse[1] <= 590:
                             continuer = False
                             pygame.quit()
-    
+
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         continuer = False
                         pygame.quit()
-        
+
         pygame.display.update()
-    
-        
+
+
     def screenCredits():
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
@@ -395,24 +449,24 @@ class Fenetres():
         fond = pygame.image.load("Textures/fondMenu.png").convert()
         rectscreen = fenetre.get_rect()
         fenetre.blit(fond,(0,0))
-    
+
         credits = pygame.image.load("Textures/Nomscredits.png").convert_alpha()
         fenetre.blit(credits,(190,300))
-        
+
         retour = pygame.image.load('Textures/retour.png').convert_alpha()
         retour = pygame.transform.scale(retour, (50,50))
         fenetre.blit(retour,(550,550))
-    
+
         continuer = True
         while continuer:
-            
+
             mouse = pygame.mouse.get_pos()
-            
-            
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-                    
+
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
@@ -422,14 +476,14 @@ class Fenetres():
                         pygame.display.update()
                         Fenetres.menu()
                         pygame.display.update()
-                                        
+
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         continuer = False
-                        
+
             pygame.display.update()
         pygame.quit()
-        
+
     def scoreboard():
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
@@ -437,21 +491,21 @@ class Fenetres():
         fond = pygame.image.load("Textures/fond.png").convert()
         rectscreen = fenetre.get_rect()
         fenetre.blit(fond,(0,0))
-    
+
         retour = pygame.image.load('Textures/retour.png').convert_alpha()
         retour = pygame.transform.scale(retour, (50,50))
         fenetre.blit(retour,(550,550))
-    
+
         continuer = True
         while continuer:
-            
+
             mouse = pygame.mouse.get_pos()
-            
-            
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-                    
+
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
@@ -461,15 +515,15 @@ class Fenetres():
                         pygame.display.update()
                         Fenetres.fin()
                         pygame.display.update()
-                                        
+
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         continuer = False
-                        
+
             pygame.display.update()
         pygame.quit()
-    
-        
+
+
     def screenInfos():
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
@@ -477,21 +531,21 @@ class Fenetres():
         fond = pygame.image.load("Textures/tuto.png").convert()
         rectscreen = fenetre.get_rect()
         fenetre.blit(fond,(0,0))
-        
+
         retour = pygame.image.load('Textures/retour.png').convert_alpha()
         retour = pygame.transform.scale(retour, (50,50))
         fenetre.blit(retour,(550,550))
-    
+
         continuer = True
         while continuer:
-    
+
             mouse = pygame.mouse.get_pos()
-            
-    
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-    
+
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
@@ -501,49 +555,49 @@ class Fenetres():
                         pygame.display.update()
                         Fenetres.menu()
                         pygame.display.update()
-                        
+
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     continuer = False
-    
+
             pygame.display.update()
         pygame.quit()
-    
+
     def fin():
         width = 640
         height = 640
         pygame.init()
         fenetre = pygame.display.set_mode((width, height))
         pygame.display.set_caption('Bravo !!!')
-            
+
         fond = pygame.image.load("Textures/screenFin.png").convert()
         fenetre.blit(fond,(0,0))
-        
+
         rejouer = pygame.image.load('Textures/rejouer.png').convert_alpha()
         rejouer = pygame.transform.scale(rejouer, (75,75))
         fenetre.blit(rejouer,(40,225))
-        
+
         home = pygame.image.load('Textures/home.png').convert_alpha()
         home = pygame.transform.scale(home, (75,75))
         fenetre.blit(home,(40,325))
-        
+
         scoreboard = pygame.image.load('Textures/scoreboard.png').convert_alpha()
         scoreboard = pygame.transform.scale(scoreboard, (75,75))
         fenetre.blit(scoreboard,(40,425))
-        
+
         continuer = True
         while continuer:
-            
+
             mouse = pygame.mouse.get_pos()
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-                        
+
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         continuer = False
-                        
+
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 225 <= mouse[1] <= 300:
@@ -553,8 +607,8 @@ class Fenetres():
                             pygame.display.update()
                             jeu=Jeu()
                             jeu.loop()
-                            pygame.display.update()   
-                            
+                            pygame.display.update()
+
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 325 <= mouse[1] <= 400:
@@ -563,8 +617,8 @@ class Fenetres():
                             continuer = True
                             pygame.display.update()
                             Fenetres.menu()
-                            pygame.display.update()    
-                            
+                            pygame.display.update()
+
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 425 <= mouse[1] <= 500:
@@ -581,7 +635,7 @@ class Fenetres():
 
 ### Programme principal ###
 if __name__=='__main__':
-    
+
     #laby = Labyrinthe(nb_cases,nb_cases)
     #joueur = Joueur('Tank2V1.png',nb_cases)
     #laby.generer()
@@ -592,4 +646,3 @@ if __name__=='__main__':
 
 
     Fenetres.chargement()
-    
