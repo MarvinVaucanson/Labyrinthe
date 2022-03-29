@@ -198,7 +198,7 @@ class Jeu:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
             laby.generer()
             laby.afficher()
-            joueur = Joueur('Textures/cochon.png',self.nb_cases,laby.murs)
+            joueur = Joueur('Textures/princesse.png',self.nb_cases,laby.murs)
             laby.fenetre.blit(joueur.image,joueur.position)
             laby.fenetre.blit(laby.fenetre,(0,0))
             pygame.display.flip()
@@ -216,11 +216,9 @@ class Jeu:
                             joueur.bas()
                         if pygame.key.get_pressed()[self.touches[1]]:
                             joueur.haut()
-                        if pygame.key.get_pressed()[self.touches[2]]:
-                            joueur = Joueur('Textures/cochon2.png',self.nb_cases,laby.murs)                           
+                        if pygame.key.get_pressed()[self.touches[2]]:                          
                             joueur.gauche()
                         if pygame.key.get_pressed()[self.touches[3]]:                            
-                            joueur = Joueur('Textures/cochon.png',self.nb_cases,laby.murs)
                             joueur.droite()
                         fin = joueur.fin_laby(laby.arrivee)
                         if fin == True:
