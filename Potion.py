@@ -266,6 +266,7 @@ class Jeu:
                                 potions = False
                         if joueur.mur_casse != None:
                             laby.effacer_mur(joueur.mur_casse)
+                            joueur.mur_casse = None
                 laby.fenetre.blit(joueur.image,joueur.position)
                 if potions == True:
                     laby.fenetre.blit(potion.image,(potion.x,potion.y))
