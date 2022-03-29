@@ -128,6 +128,9 @@ class Minuteur :
         self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
         if a == 0 :
             pygame.quit()        
+            
+    def augmenter_temps(self) :
+        self.sec = self.sec + 20
 
 class Joueur:
     def __init__(self,image,nb_cases,murs):
@@ -137,6 +140,7 @@ class Joueur:
         self.position = self.image.get_rect()
         self.murs = murs
         self.vitesse = 3
+        self.casser = False
         pygame.display.flip()
     def gauche (self):
         if self.position[0] >= 0 and self.collision(4) == False:
@@ -170,8 +174,11 @@ class Joueur:
             self.test = self.test.move(0,self.vitesse)
         elif direction == 4:
             self.test = self.test.move(-self.vitesse,0)
-        for mur in self.murs:
-            if pygame.Rect.colliderect(self.test,mur):
+        for i in range (len(self.murs)):
+            if pygame.Rect.colliderect(self.test,self.murs[i]):
+                if self.casser == True :
+                    del self.murs[i]
+                    self.casser = False
                 return True
         return False
         
@@ -182,6 +189,12 @@ class Joueur:
     def fin_laby(self,arrivee):
         if pygame.Rect.colliderect(self.position,arrivee):
             return True
+            
+    def augmenter_vitesse(self):
+        self.vitesse = self.vitesse + 1
+        
+    def casser_mur(self) : 
+        self.casser = True
         
 class Jeu:
     def __init__(self):
@@ -192,16 +205,24 @@ class Jeu:
         self.laby_fini = False
         self.nb_cases = 5
         self.score = 0
+        self.choix_potions = ["verte", "jaune", "bleue"]
+        self.potion = choice(self.choix_potions)
     def loop(self):
         pygame.key.set_repeat(20, 20)
         while self.continuer:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
             laby.generer()
             laby.afficher()
-            joueur = Joueur('images/princesse.png',self.nb_cases,laby.murs)
-            potion = Potions('images/PotionVerte.png', self.nb_cases)
-            laby.fenetre.blit(joueur.image,joueur.position)
+            self.potion = choice(self.choix_potions)
+            if self.potion == "verte" :
+                potion = Potions('images/PotionVerte.png', self.nb_cases)
+            elif self.potion == "jaune" :
+                potion = Potions('images/PotionJaune.png', self.nb_cases)
+            elif self.potion == "bleue" :
+                potion = Potions('images/PotionBleue.png', self.nb_cases)
             laby.fenetre.blit(potion.image,(potion.x,potion.y))
+            joueur = Joueur('images/princesse.png',self.nb_cases,laby.murs)
+            laby.fenetre.blit(joueur.image,joueur.position)
             potions = True
             laby.fenetre.blit(laby.fenetre,(0,0))
             pygame.display.flip()
@@ -227,7 +248,12 @@ class Jeu:
                             laby.fini = True
                         if potions == True:
                             if joueur.potions(potion) == True :
-                                potion.vitesse(joueur)
+                                if self.potion == "verte" :
+                                    joueur.augmenter_vitesse()
+                                elif self.potion == "jaune" :
+                                    self.minuteur.augmenter_temps()
+                                elif self.potion == "bleue" :
+                                    joueur.casser_mur()
                                 del potion
                                 potions = False
                 laby.fenetre.blit(joueur.image,joueur.position)
@@ -251,15 +277,6 @@ class Potions :
         self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = pygame.Rect(self.x, self.y, (int(640/nb_cases)-16), (int(640/nb_cases)-16))
         pygame.display.flip()
-        
-    def vitesse(self,joueur):
-        joueur.vitesse = joueur.vitesse + 1
-        
-    def chrono(self):
-        pass
-        
-    def mur(self):
-        pass
         
 
 
