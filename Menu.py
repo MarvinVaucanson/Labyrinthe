@@ -147,7 +147,7 @@ class Minuteur :
     def temps_aleatoire(self):
         a=int(abs(time.time() - self.start - self.sec))
         if a <= self.aleatoire and a > self.aleatoire-10:
-            self.laby.fenetre.blit(self.font.render("Attention inversion des touches !!!", True, (255, 0, 0)), (590, 5))
+            self.laby.fenetre.blit(self.font.render("Attention inversion des touches !!!", True, (255, 0, 0)), (10, 0))
             return True
         return False
 
