@@ -103,8 +103,9 @@ class Labyrinthe:
                 if self.laby[i][j].murE:
                     rectangle = pygame.draw.rect(self.fond,(84,32,14),(int((i+1)*640/self.largeur),int(j*640/self.largeur),3,int(640/self.largeur)+3))
                     self.murs.append(rectangle)
-        pygame.draw.circle(self.fond,(255,0,0),(int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2),int((self.largeur-1)*640/self.largeur)+int((640/self.largeur)/2)),10)
-
+        arrivee = pygame.image.load("Textures/fondSol.png").convert()
+        arrivee = pygame.transform.scale(arrivee, (int(640/self.largeur)-16,int(640/self.largeur)-16))
+        
         #self.fenetre.blit()
         pygame.display.flip()
 
@@ -116,6 +117,7 @@ class Labyrinthe:
 
 class Minuteur :
     def __init__ (self, sec):
+        self.aleatoire = randint(10, sec)
         self.sec = sec
         nb_cases = 5
         self.laby = Labyrinthe(nb_cases,nb_cases)
@@ -132,10 +134,22 @@ class Minuteur :
         a=int(abs(time.time() - self.start - self.sec))
         self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
         if a == 0 :
-            pygame.quit()
+            continuer = False
+            pygame.display.update()
+            continuer = True
+            pygame.display.update()
+            Fenetres.fin()
+            pygame.display.update()
 
     def augmenter_temps(self) :
         self.sec = self.sec + 20
+        
+    def temps_aleatoire(self):
+        a=int(abs(time.time() - self.start - self.sec))
+        if a <= self.aleatoire and a > self.aleatoire-10:
+            self.laby.fenetre.blit(self.font.render("Attention inversion des touches !!!", True, (255, 0, 0)), (590, 5))
+            return True
+        return False
 
 class Joueur:
     def __init__(self,image,nb_cases,murs):
@@ -144,7 +158,7 @@ class Joueur:
         self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
         self.position = self.image.get_rect()
         self.murs = murs
-        self.vitesse = 3
+        self.vitesse = 4
         self.casser = False
         self.mur_casse = None
         pygame.display.flip()
@@ -221,6 +235,8 @@ class Jeu:
             laby.generer()
             laby.afficher()
             self.potion = choice(self.choix_potions)
+            arrivee = pygame.image.load("Textures/porte.png").convert_alpha()
+            arrivee = pygame.transform.scale(arrivee, (int(640/laby.largeur)-16,int(640/laby.largeur)-16))
             if self.potion == "verte" :
                 potion = Potions('Textures/PotionVerte.png', self.nb_cases)
             elif self.potion == "jaune" :
@@ -236,6 +252,7 @@ class Jeu:
             while laby.fini == False:
                 laby.fenetre.blit(laby.fond,(0,0))
                 laby.fenetre.blit(laby.fenetre,(0,0))
+                laby.fenetre.blit(arrivee,(int((self.nb_cases-1)*640/self.nb_cases)+6,int((self.nb_cases-1)*640/self.nb_cases)+6))
                 for event in pygame.event.get():
                     if event.type==pygame.QUIT:
                         self.continuer = False
@@ -270,6 +287,11 @@ class Jeu:
                 if potions == True:
                     laby.fenetre.blit(potion.image,(potion.x,potion.y))
                 self.minuteur.affichertemps()
+                inversion_touches = self.minuteur.temps_aleatoire()
+                if inversion_touches == True:
+                    self.touches = [K_UP,K_DOWN,K_RIGHT,K_LEFT]
+                else:
+                    self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
                 pygame.display.flip()
             self.nb_cases = self.nb_cases + 2
             self.score = self.score + 1
@@ -341,10 +363,6 @@ class Fenetres():
         jouer = pygame.transform.scale(jouer, (300,75))
         fenetre.blit(jouer,(170,250))
 
-        """select2 = pygame.image.load('Textures/select.png').convert_alpha()
-        select2 = pygame.transform.scale(select2, (300,75))
-        fenetre.blit(select2,(170,370))"""
-
         credits = pygame.image.load('Textures/credits2.png').convert_alpha()
         credits = pygame.transform.scale(credits, (300,75))
         fenetre.blit(credits,(170,370))
@@ -352,11 +370,6 @@ class Fenetres():
         quitter = pygame.image.load('Textures/quitter2.png').convert_alpha()
         quitter = pygame.transform.scale(quitter, (300,75))
         fenetre.blit(quitter,(170,490))
-
-        """select1 = pygame.image.load('Textures/select.png').convert_alpha()
-        select1 = pygame.transform.scale(select1, (300,75))
-        fenetre.blit(select1,(170,250))"""
-
 
 
         pygame.display.flip()
@@ -370,25 +383,6 @@ class Fenetres():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
-
-                """if event.type == KEYDOWN:
-                    selec = selec + 1
-                    jouer = pygame.image.load('Textures/jouer2.png').convert_alpha()
-                    jouer = pygame.transform.scale(jouer, (300,75))
-                    fenetre.blit(jouer,(170,250))
-                    pygame.display.update()
-                    select2 = pygame.image.load('Textures/select.png').convert_alpha()
-                    select2 = pygame.transform.scale(select2, (300,75))
-                    fenetre.blit(select2,(170,370))
-                    pygame.display.update()
-                    if event.key == K_SPACE:
-                        if selec == 1:
-                            continuer = False
-                            pygame.display.update()
-                            continuer = True
-                            pygame.display.update()
-                            Fenetres.screenCredits()
-                            pygame.display.update()"""
 
 
 
