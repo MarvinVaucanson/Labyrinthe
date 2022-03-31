@@ -122,6 +122,7 @@ class Minuteur :
         nb_cases = 5
         self.laby = Labyrinthe(nb_cases,nb_cases)
         self.font = pygame.font.SysFont('impact', 30)
+        self.couleur = (84,32,14)
         self.start = time.time()
 
     def temps (self):
@@ -132,7 +133,9 @@ class Minuteur :
 
     def affichertemps(self):
         a=int(abs(time.time() - self.start - self.sec))
-        self.laby.fenetre.blit(self.font.render(str(a), True, (84, 32, 14)), (590, 5))
+        if a <= 10:
+            self.couleur = (250,0,0)
+        self.laby.fenetre.blit(self.font.render(str(a), True, (self.couleur)), (590, 5))
         if a == 0 :
             continuer = False
             pygame.display.update()
