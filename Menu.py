@@ -432,6 +432,17 @@ class Fenetres():
                     if event.key == K_ESCAPE:
                         continuer = False
                         pygame.quit()
+                        
+                if event.type == MOUSEBUTTONDOWN :
+                    if event.button == 1 :
+                        if 0 <= mouse[0] <= 300 and 535 <= mouse[1] <= 600:
+                            continuer = False
+                            pygame.display.update()
+                            continuer = True
+                            pygame.display.update()
+                            Fenetres.avatar()
+                            pygame.display.update()
+                            
 
         pygame.display.update()
 
@@ -625,6 +636,54 @@ class Fenetres():
 
             pygame.display.update()
         pygame.quit()
+        
+    def avatar():
+        pygame.init()
+        fenetre = pygame.display.set_mode((640,640))
+        pygame.display.set_caption('Avatar')
+        fond = pygame.image.load("Textures/fond.2.png").convert()
+        rectscreen = fenetre.get_rect()
+        fenetre.blit(fond,(0,0))
+        
+        princesse_choix = pygame.image.load('Textures/princesse.png').convert_alpha()
+        princesse_choix = pygame.transform.scale(princesse_choix, (150,150))
+        fenetre.blit(princesse_choix,(100,100))
+        
+        cochon_choix = pygame.image.load('Textures/princesse.png').convert_alpha()
+        cochon_choix = pygame.transform.scale(cochon_choix, (150,150))
+        fenetre.blit(cochon_choix,(300,100))
+
+        retour = pygame.image.load('Textures/retour.png').convert_alpha()
+        retour = pygame.transform.scale(retour, (50,50))
+        fenetre.blit(retour,(550,550))
+
+        continuer = True
+        while continuer:
+
+            mouse = pygame.mouse.get_pos()
+
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    continuer = False
+
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
+                        continuer = False
+                        pygame.display.update()
+                        continuer = True
+                        pygame.display.update()
+                        Fenetres.menu()
+                        pygame.display.update()
+
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        continuer = False
+
+            pygame.display.update()
+        pygame.quit()
+
 
 
 ### Programme principal ###
@@ -636,3 +695,4 @@ if __name__=='__main__':
     #laby.afficher()
     Fenetres.chargement()
     #Fenetres.fin()
+
