@@ -232,6 +232,7 @@ class Jeu:
         self.choix_potions = ["verte", "jaune", "bleue"]
         self.potion = choice(self.choix_potions)
     def loop(self):
+        item = pygame.mixer.Sound('Audio/blop.wav')
         pygame.key.set_repeat(20, 20)
         while self.continuer:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
@@ -276,10 +277,13 @@ class Jeu:
                         if potions == True:
                             if joueur.potions(potion) == True :
                                 if self.potion == "verte" :
+                                    pygame.mixer.Sound.play(item)
                                     joueur.augmenter_vitesse()
                                 elif self.potion == "jaune" :
+                                    pygame.mixer.Sound.play(item)
                                     self.minuteur.augmenter_temps()
                                 elif self.potion == "bleue" :
+                                    pygame.mixer.Sound.play(item)
                                     joueur.casser_mur()
                                 del potion
                                 potions = False
