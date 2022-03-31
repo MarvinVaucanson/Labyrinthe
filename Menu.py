@@ -636,7 +636,3 @@ if __name__=='__main__':
     #laby.afficher()
     Fenetres.chargement()
     #Fenetres.fin()
-
-
-
-    Fenetres.chargement()
