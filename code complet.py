@@ -351,6 +351,7 @@ class Fenetres():
 
 
     def menu(self):
+        clic = pygame.mixer.Sound('Audio/clic.wav')
         pygame.init()
         fenetre = pygame.display.set_mode((640, 640))
         pygame.display.set_caption('Bienvenue dans notre labyrinthe !')
@@ -398,6 +399,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 250 <= mouse[1] <= 350:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -410,6 +412,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 370 <= mouse[1] <= 470:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -421,6 +424,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 500 <= mouse[0] <= 600 and 500 <= mouse[1] <= 600:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -432,6 +436,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 170 <= mouse[0] <= 570 and 490 <= mouse[1] <= 590:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.quit()
                             sys.exit()
@@ -446,6 +451,7 @@ class Fenetres():
 
 
     def screenCredits(self):
+        clic = pygame.mixer.Sound('Audio/clic.wav')
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Crédits')
@@ -473,6 +479,7 @@ class Fenetres():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
+                        pygame.mixer.Sound.play(clic)
                         continuer = False
                         pygame.display.update()
                         continuer = True
@@ -488,6 +495,7 @@ class Fenetres():
         pygame.quit()
 
     def scoreboard(self):
+        clic = pygame.mixer.Sound('Audio/clic.wav')
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Scoreboard')
@@ -512,6 +520,7 @@ class Fenetres():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
+                        pygame.mixer.Sound.play(clic)
                         continuer = False
                         pygame.display.update()
                         continuer = True
@@ -528,6 +537,7 @@ class Fenetres():
 
 
     def screenInfos(self):
+        clic = pygame.mixer.Sound('Audio/clic.wav')
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Infos')
@@ -552,6 +562,7 @@ class Fenetres():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if 550 <= mouse[0] <= 600 and 550 <= mouse[1] <= 600:
+                        pygame.mixer.Sound.play(clic)
                         continuer = False
                         pygame.display.update()
                         continuer = True
@@ -567,6 +578,7 @@ class Fenetres():
         pygame.quit()
 
     def fin(self):
+        clic = pygame.mixer.Sound('Audio/clic.wav')
         pygame.init()
         fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Bravo !!!')
@@ -604,6 +616,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 225 <= mouse[1] <= 300:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -615,6 +628,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 325 <= mouse[1] <= 400:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
@@ -625,6 +639,7 @@ class Fenetres():
                 if event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if 40 <= mouse[0] <= 105 and 425 <= mouse[1] <= 500:
+                            pygame.mixer.Sound.play(clic)
                             continuer = False
                             pygame.display.update()
                             continuer = True
