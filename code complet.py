@@ -567,10 +567,8 @@ class Fenetres():
         pygame.quit()
 
     def fin(self):
-        width = 640
-        height = 640
         pygame.init()
-        fenetre = pygame.display.set_mode((width, height))
+        fenetre = pygame.display.set_mode((640,640))
         pygame.display.set_caption('Bravo !!!')
 
         fond = pygame.image.load("Textures/screenFin.png").convert()
