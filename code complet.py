@@ -155,7 +155,7 @@ class Minuteur :
 class Joueur:
     def __init__(self,image,nb_cases,murs):
         self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))    #Adapte le personnage à la taille de la case
         self.position = self.image.get_rect()
         self.murs = murs
         self.vitesse = 4
@@ -201,10 +201,12 @@ class Joueur:
         return False
 
     def potions(self, potion):
+        '''Méthode qui renvoie True si la princesse rencontre une potion'''
         if pygame.Rect.colliderect(self.position,potion.position):
             return True
 
     def fin_laby(self,arrivee):
+        '''Méthode qui renvoie True si la princesse atteint la fin du labyrinthe'''
         if pygame.Rect.colliderect(self.position,arrivee):
             return True
 
@@ -232,7 +234,7 @@ class Jeu:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
             laby.generer()
             laby.afficher()
-            self.potion = choice(self.choix_potions)
+            self.potion = choice(self.choix_potions)    #Choisit une potion au hasard sur les trois
             arrivee = pygame.image.load("Textures/porte.png").convert_alpha()
             arrivee = pygame.transform.scale(arrivee, (int(640/laby.largeur)-16,int(640/laby.largeur)-16))
             if self.potion == "verte" :
@@ -244,7 +246,7 @@ class Jeu:
             laby.fenetre.blit(potion.image,(potion.x,potion.y))
             joueur = Joueur('Textures/princesse.png',self.nb_cases,laby.murs)
             laby.fenetre.blit(joueur.image,joueur.position)
-            potions = True
+            potions = True  #Variable qui est à True tant que la potion n'a pas été utilisée
             laby.fenetre.blit(laby.fenetre,(0,0))
             pygame.display.flip()
             while laby.fini == False:
@@ -294,10 +296,9 @@ class Jeu:
                 else:
                     self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
                 pygame.display.flip()
-            self.nb_cases = self.nb_cases + 2
+            self.nb_cases = self.nb_cases + 2   #Augmente la taille du labyrinthe suivant de deux cases
             self.score = self.score + 1
         self.recuperer_score()
-        time.sleep(3)
         pygame.quit()
         sys.exit()
         
