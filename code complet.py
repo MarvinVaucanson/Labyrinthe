@@ -302,8 +302,6 @@ class Jeu:
         pygame.quit()
         sys.exit()
         
-    def recuperer_score(self):
-        self.score = str(self.score)
 
 
 class Potions :
