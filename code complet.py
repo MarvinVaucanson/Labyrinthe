@@ -601,7 +601,7 @@ class Fenetres():
         scoreboard = pygame.transform.scale(scoreboard, (75,75))
         fenetre.blit(scoreboard,(40,425))
         
-        fenetre.blit(pygame.font.SysFont('Liberation',30).render(("Score : "+ str(self.jeu.score)), True, (84, 32, 14)), (500, 5))
+        fenetre.blit(pygame.font.SysFont('Liberation',30).render(("Score : "+ str(self.jeu.score*10)), True, (84, 32, 14)), (500, 5))
         
         continuer = True
         while continuer:
