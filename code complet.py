@@ -33,7 +33,6 @@ class Labyrinthe:
 
 
     def __directions_possibles(self,i,j):
-        # code à décommenter et à compléter : exercice n°4
 
         directions = []
         if j < self.hauteur-1 and not self.laby[i][j+1].vue:
@@ -49,7 +48,6 @@ class Labyrinthe:
 
 
     def __abattre_mur(self,i,j,dir,pile):
-        # code à décommenter et à compléter : exercice n°5
 
         if dir == 'S': # on se dirige vers le sud
             self.laby[i][j].murS = False # on abat le mur sud de la case courante
@@ -75,7 +73,6 @@ class Labyrinthe:
 
 
     def generer(self):
-        # code à décommenter et à compléter : exercice n°6
 
         pile = Pile()
         i,j = (randint(0,self.hauteur-1),randint(0,self.largeur-1))
