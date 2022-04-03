@@ -182,7 +182,7 @@ class Joueur:
         self.murs = murs    #Liste de rectangles correspondant aux murs du labyrinthe
         self.vitesse = 4
         self.casser = False     #Attribut qui passe à True quand le joueur récupère la potion bleue
-        self.mur_casse = None      #Contient le mur qui cassé par le joueur après avoir récupéré la potion bleue
+        self.mur_casse = None      #Contient le mur qui a été cassé par le joueur après avoir récupéré la potion bleue
         pygame.display.flip()
 
     def gauche (self):
