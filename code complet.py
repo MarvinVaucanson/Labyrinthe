@@ -164,18 +164,22 @@ class Joueur:
         pygame.display.flip()
    
     def gauche (self):
+        '''Déplace le joueur de self.vitesse pixels vers la gauche'''
         if self.position[0] >= 0 and self.collision(4) == False:
             self.position = self.position.move(-self.vitesse,0)
    
     def droite (self):
+        '''Déplace le joueur de self.vitesse pixels vers la droite'''
         if self.position[0] <= 640-self.position[2] and self.collision(2) == False:
             self.position = self.position.move(self.vitesse,0)
    
     def haut (self):
+        '''Déplace le joueur de self.vitesse pixels vers le haut'''
         if self.position[1] >= 0 and self.collision(1) == False:
             self.position = self.position.move(0,-self.vitesse)
   
     def bas (self):
+        '''Déplace le joueur de self.vitesse pixels vers le bas'''
         if self.position[1] <= 640-self.position[3] and self.collision(3) == False:
             self.position = self.position.move(0,self.vitesse)
    
@@ -211,6 +215,7 @@ class Joueur:
             return True
 
     def augmenter_vitesse(self):
+        '''Augmente la vitesse du joueur'''
         self.vitesse = self.vitesse + 1
 
     def casser_mur(self) :
