@@ -1,4 +1,4 @@
-import pygame
+importimport pygame
 import sys
 from pygame.locals import *
 from random import*
@@ -112,7 +112,6 @@ class Labyrinthe:
         pygame.display.flip()
 
 
-
 class Minuteur :
     def __init__ (self, sec): #initialise les paramètres
         self.aleatoire = randint(10, sec)
@@ -141,8 +140,8 @@ class Minuteur :
             fenetres.fin()
             pygame.display.update()
 
-    def augmenter_temps(self) : #pour la classe potion
-        self.sec = self.sec + 20
+    def augmenter_temps(self) : 
+        self.sec = self.sec + 20 #augmente le temps pour la potion jaune
 
     def temps_aleatoire(self):
         '''renvoie True pendant 10 secondes à partir d'un temps aléatoire'''
@@ -240,10 +239,14 @@ class Joueur:
     def augmenter_vitesse(self):
         '''Augmente la vitesse du joueur'''
         self.vitesse = self.vitesse + 1
+        #augmente la vitesse lorsque la potion verte est prise
+
 
     def casser_mur(self) :
         '''Passe l'attribut self.casser à True quand le joueur récupère la potion bleue'''
         self.casser = True
+        # un seul mur paux casser lorsque la potion bleu est prise
+
 
 class Jeu:
     def __init__(self):
@@ -304,14 +307,14 @@ class Jeu:
                             if joueur.potions(potion) == True :
                                 if self.potion == "verte" :
                                     pygame.mixer.Sound.play(item)
-                                    joueur.augmenter_vitesse()
+                                    joueur.augmenter_vitesse() #si la potion verte est choisi
                                 elif self.potion == "jaune" :
                                     pygame.mixer.Sound.play(item)
-                                    self.minuteur.augmenter_temps()
+                                    self.minuteur.augmenter_temps() #si la potion jaune est choisi
                                 elif self.potion == "bleue" :
                                     pygame.mixer.Sound.play(item)
-                                    joueur.casser_mur()
-                                del potion
+                                    joueur.casser_mur() #si la potion bleu est choisi
+                                del potion #supprime la potion après son utilisation
                                 potions = False
                         if joueur.mur_casse != None:    #Casse le mur rencontré par le joueur si il a récupéré la potion bleue et ne l'a pas encore utilisée
                             laby.effacer_mur(joueur.mur_casse)
@@ -339,11 +342,12 @@ class Jeu:
 
 class Potions :
     def __init__(self, image, nb_cases):
+        #initialise les potions
         self.x = int((randint(0, nb_cases-1))*640/nb_cases)
-        self.y = int((randint(0, nb_cases-1))*640/nb_cases)
+        self.y = int((randint(0, nb_cases-1))*640/nb_cases) #choisi un nombre au hasard x et y afin de déterminer au hasard les coordonées de la potion
         self.image = pygame.image.load(image)
-        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))
-        self.position = pygame.Rect(self.x, self.y, (int(640/nb_cases)-16), (int(640/nb_cases)-16))
+        self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16)) #taille de la potion selon les labyrinthes
+        self.position = pygame.Rect(self.x, self.y, (int(640/nb_cases)-16), (int(640/nb_cases)-16)) #apparitions de la potion dans le labyrinthe
         pygame.display.flip()
 
 
@@ -699,4 +703,3 @@ if __name__=='__main__':
 
     fenetres = Fenetres()
     fenetres.chargement()
-
