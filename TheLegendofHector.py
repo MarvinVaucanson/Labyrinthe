@@ -1,4 +1,4 @@
-importimport pygame
+import pygame
 import sys
 from pygame.locals import *
 from random import*
