@@ -73,7 +73,7 @@ class Labyrinthe:
 
 
     def generer(self):
-
+        '''Génère un labyrinthe de self.largeur*self.hauteur (carré)'''
         pile = Pile()
         i,j = (randint(0,self.hauteur-1),randint(0,self.largeur-1))
         pile.empiler((i,j))
@@ -91,6 +91,7 @@ class Labyrinthe:
 
 
     def afficher(self):
+        '''Affiche le labyrinthe et l'arrivée'''
         for i in range(self.largeur):
             color="r"
             pygame.draw.rect(self.fond,(84,32,14),pygame.Rect(0,0,640,640),3)
@@ -108,6 +109,7 @@ class Labyrinthe:
         pygame.display.flip()
 
     def effacer_mur(self,mur):
+        '''Efface mur (effet de la potion bleue)'''
         pygame.draw.rect(self.fond,(193, 196, 192),mur,3)
         pygame.display.flip()
 
@@ -146,6 +148,7 @@ class Minuteur :
         self.sec = self.sec + 20
 
     def temps_aleatoire(self):
+        '''renvoie True pendant 10 secondes à partir d'un temps aléatoire'''
         a=int(abs(time.time() - self.start - self.sec))
         if a <= self.aleatoire and a > self.aleatoire-10:
             self.laby.fenetre.blit(self.font.render("Attention inversion des touches !!!", True, (255, 0, 0)), (10, 0))
@@ -157,10 +160,10 @@ class Joueur:
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (int(640/nb_cases)-16,int(640/nb_cases)-16))    #Adapte le personnage à la taille de la case
         self.position = self.image.get_rect()
-        self.murs = murs
+        self.murs = murs    #Liste de rectangles correspondant aux murs du labyrinthe
         self.vitesse = 4
-        self.casser = False
-        self.mur_casse = None
+        self.casser = False     #Attribut qui passe à True quand le joueur récupère la potion bleue
+        self.mur_casse = None      #Contient le mur qui cassé par le joueur après avoir récupéré la potion bleue
         pygame.display.flip()
    
     def gauche (self):
@@ -197,10 +200,10 @@ class Joueur:
             self.test = self.test.move(-self.vitesse,0)
         for i in range (len(self.murs)):
             if pygame.Rect.colliderect(self.test,self.murs[i]):
-                if self.casser == True :
+                if self.casser == True :    #Teste si le joueur peut casser un mur
                     self.casser = False
-                    self.mur_casse = self.murs[i]
-                    del self.murs[i]
+                    self.mur_casse = self.murs[i]   #Récupère le rectangle du mur cassé
+                    del self.murs[i]    #Supprime ce mur de la liste des murs
                 return True
         return False
 
@@ -219,6 +222,7 @@ class Joueur:
         self.vitesse = self.vitesse + 1
 
     def casser_mur(self) :
+        '''Passe l'attribut self.casser à True quand le joueur récupère la potion bleue'''
         self.casser = True
 
 class Jeu:
@@ -228,25 +232,26 @@ class Jeu:
         self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
         self.jeu_fini = False
         self.laby_fini = False
-        self.nb_cases = 5
-        self.score = 0
+        self.nb_cases = 5   #Taille du labyrinthe
+        self.score = 0  #Nombre de labyrinthes finis
         self.choix_potions = ["verte", "jaune", "bleue"]
         self.potion = choice(self.choix_potions)
     def loop(self):
+        '''Boucle principale du jeu'''
         item = pygame.mixer.Sound('Audio/blop.wav')
         pygame.key.set_repeat(20, 20)
         while self.continuer:
             laby = Labyrinthe(self.nb_cases,self.nb_cases)
             laby.generer()
-            laby.afficher()
+            laby.afficher()     
             self.potion = choice(self.choix_potions)    #Choisit une potion au hasard sur les trois
             arrivee = pygame.image.load("Textures/porte.png").convert_alpha()
-            arrivee = pygame.transform.scale(arrivee, (int(640/laby.largeur)-16,int(640/laby.largeur)-16))
-            if self.potion == "verte" :
+            arrivee = pygame.transform.scale(arrivee, (int(640/laby.largeur)-16,int(640/laby.largeur)-16))           
+            if self.potion == "verte" :     #Affiche la potion verte si c'est celle qui a été choisie
                 potion = Potions('Textures/PotionVerte.png', self.nb_cases)
-            elif self.potion == "jaune" :
+            elif self.potion == "jaune" :   #Affiche la potion verte si c'est celle qui a été choisie
                 potion = Potions('Textures/PotionJaune.png', self.nb_cases)
-            elif self.potion == "bleue" :
+            elif self.potion == "bleue" :   #Affiche la potion verte si c'est celle qui a été choisie
                 potion = Potions('Textures/PotionBleue.png', self.nb_cases)
             laby.fenetre.blit(potion.image,(potion.x,potion.y))
             joueur = Joueur('Textures/princesse.png',self.nb_cases,laby.murs)
@@ -288,7 +293,7 @@ class Jeu:
                                     joueur.casser_mur()
                                 del potion
                                 potions = False
-                        if joueur.mur_casse != None:
+                        if joueur.mur_casse != None:    #Casse le mur rencontré par le joueur si il a récupéré la potio bleue et ne l'a pas encore utilisée
                             laby.effacer_mur(joueur.mur_casse)
                             joueur.mur_casse = None
                 laby.fenetre.blit(joueur.image,joueur.position)
@@ -296,7 +301,7 @@ class Jeu:
                     laby.fenetre.blit(potion.image,(potion.x,potion.y))
                 self.minuteur.affichertemps()
                 inversion_touches = self.minuteur.temps_aleatoire()
-                if inversion_touches == True:
+                if inversion_touches == True:   
                     self.touches = [K_UP,K_DOWN,K_RIGHT,K_LEFT]
                 else:
                     self.touches = [K_DOWN,K_UP,K_LEFT,K_RIGHT]
