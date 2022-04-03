@@ -382,7 +382,7 @@ class Fenetres():
                         pygame.display.update()
                         continuer = True
                         pygame.display.flip
-                        self.menu()
+                        self.menu()                 #si espace est press, on ouvre la fenêtre Menu
                         pygame.display.flip
 
             pygame.display.update()
@@ -418,15 +418,13 @@ class Fenetres():
         quitter = pygame.image.load('Textures/quitter2.png').convert_alpha()
         quitter = pygame.transform.scale(quitter, (300,75))
         fenetre.blit(quitter,(170,490))
-
-
+        
         pygame.display.flip()
 
         continuer = True
         while continuer:
 
             mouse = pygame.mouse.get_pos()
-            selec = 0
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -445,7 +443,7 @@ class Fenetres():
                             continuer = True
                             pygame.display.update()
                             self.jeu=Jeu()
-                            self.jeu.loop()
+                            self.jeu.loop()             # Lancement du jeu
                             pygame.display.update()
 
         # BOUTTON CREDITS #
@@ -457,7 +455,7 @@ class Fenetres():
                             pygame.display.update()
                             continuer = True
                             pygame.display.update()
-                            self.screenCredits()
+                            self.screenCredits()            #envoi vers la fenêtre des Credits
                             pygame.display.update()
 
         # BOUTTON INFOS #
@@ -469,7 +467,7 @@ class Fenetres():
                             pygame.display.update()
                             continuer = True
                             pygame.display.update()
-                            self.screenInfos()
+                            self.screenInfos()              #envoi vers la fenêtre des Infos
                             pygame.display.update()
 
         # BOUTTON QUITTER #
@@ -524,7 +522,7 @@ class Fenetres():
                         pygame.display.update()
                         continuer = True
                         pygame.display.update()
-                        self.menu()
+                        self.menu()                 # retour vers le menu
                         pygame.display.update()
 
                 if event.type == KEYDOWN:
@@ -569,7 +567,7 @@ class Fenetres():
                         pygame.display.update()
                         continuer = True
                         pygame.display.update()
-                        self.fin()
+                        self.fin()              #affiche la fenêtre de fin
                         pygame.display.update()
 
                 if event.type == KEYDOWN:
@@ -598,7 +596,6 @@ class Fenetres():
 
             mouse = pygame.mouse.get_pos()
 
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continuer = False
@@ -611,7 +608,7 @@ class Fenetres():
                         pygame.display.update()
                         continuer = True
                         pygame.display.update()
-                        self.menu()
+                        self.menu()                 #retour vers le menu
                         pygame.display.update()
 
             if event.type == KEYDOWN:
@@ -643,6 +640,7 @@ class Fenetres():
         fenetre.blit(scoreboard,(40,425))
 
         fenetre.blit(pygame.font.Font('Retro Gaming.ttf',30).render(("Score : "+ str(self.jeu.score)), True, (84, 32, 14)), (460, 5))
+        #affiche le score sur la fenêtre de fin
 
         continuer = True
         while continuer:
@@ -666,7 +664,7 @@ class Fenetres():
                             continuer = True
                             pygame.display.update()
                             jeu=Jeu()
-                            jeu.loop()
+                            jeu.loop()      # relance le jeu
                             pygame.display.update()
 
                 if event.type == MOUSEBUTTONDOWN:
@@ -677,7 +675,7 @@ class Fenetres():
                             pygame.display.update()
                             continuer = True
                             pygame.display.update()
-                            self.menu()
+                            self.menu()             #retour vers le menu
                             pygame.display.update()
 
                 if event.type == MOUSEBUTTONDOWN:
@@ -688,12 +686,12 @@ class Fenetres():
                             pygame.display.update()
                             continuer = True
                             pygame.display.update()
-                            self.scoreboard()
+                            self.scoreboard()           #affiche le scoreboard
                             pygame.display.update()
 
             pygame.display.update()
         pygame.quit()
-        sys.exit()
+        sys.exit()  #fermeture du jeu 
 
 
 
